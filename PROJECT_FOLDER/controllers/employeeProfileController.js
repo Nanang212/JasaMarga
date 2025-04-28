@@ -1,4 +1,4 @@
-const { Profile, Employee } = require('../models');
+const { EmployeeProfile, Employee } = require('../models');
 const { validationResult, body, param } = require('express-validator');
 const { Op } = require('sequelize');
 const messages = require('../config/message');
@@ -13,7 +13,7 @@ class EmployeeProfileController {
       if (!isExists) {
         throw new Error(messages.EMPLOYEE.NOT_FOUND);
       }
-      const profileExists = await Profile.findOne({ where: { employee_id: item } });
+      const profileExists = await EmployeeProfile.findOne({ where: { employee_id: item } });
       if (profileExists) {
         throw new Error(messages.GENERAL.UNIQUE);
       }
@@ -30,7 +30,7 @@ class EmployeeProfileController {
 
   static updateValidation = [
     param('id').isInt().custom(async (item) => {
-      const isExists = await Profile.findOne({ where: { id: item } });
+      const isExists = await EmployeeProfile.findOne({ where: { id: item } });
       if (!isExists) {
         throw new Error(messages.EMPLOYEE_PROFILE.NOT_FOUND);
       }
@@ -41,7 +41,7 @@ class EmployeeProfileController {
       if (!isExists) {
         throw new Error(messages.EMPLOYEE.NOT_FOUND);
       }
-      const profileExists = await Profile.findOne({ where: { employee_id: item } });
+      const profileExists = await EmployeeProfile.findOne({ where: { employee_id: item } });
       if (profileExists) {
         throw new Error(messages.GENERAL.UNIQUE);
       }
@@ -58,7 +58,7 @@ class EmployeeProfileController {
 
   static deleteValidation = [
     param('id').isInt().custom(async (item) => {
-      const isExists = await Profile.findOne({ where: { id: item } });
+      const isExists = await EmployeeProfile.findOne({ where: { id: item } });
       if (!isExists) {
         throw new Error(messages.EMPLOYEE_PROFILE.NOT_FOUND);
       }
@@ -92,7 +92,7 @@ class EmployeeProfileController {
         { model: Employee, as: 'employee', required: false }
       ];
 
-      const datas = await Profile.findAll(query);
+      const datas = await EmployeeProfile.findAll(query);
       return res.status(200).json({ status: 'success', data: datas });
 
     } catch (error) {
@@ -103,7 +103,7 @@ class EmployeeProfileController {
 
   static async detail(req, res) {
     try {
-      const data = await Profile.findOne({
+      const data = await EmployeeProfile.findOne({
         where: { id: req.params.id },
         include: [{ model: Employee, as: 'employee', required: false }]
       });
@@ -127,9 +127,9 @@ class EmployeeProfileController {
       return res.status(406).json({ status: 'error', message: errorMessages });
     }
 
-    const t = await Profile.sequelize.transaction();
+    const t = await EmployeeProfile.sequelize.transaction();
     try {
-      const data = await Profile.create(req.body, { transaction: t });
+      const data = await EmployeeProfile.create(req.body, { transaction: t });
       await t.commit();
       return res.status(201).json({ status: 'success', data: data });
 
@@ -147,9 +147,9 @@ class EmployeeProfileController {
       return res.status(406).json({ status: 'error', message: errorMessages });
     }
 
-    const t = await Profile.sequelize.transaction();
+    const t = await EmployeeProfile.sequelize.transaction();
     try {
-      const profile = await Profile.findByPk(req.params.id);
+      const profile = await EmployeeProfile.findByPk(req.params.id);
       if (!profile) {
         return res.status(404).json({ status: 'error', message: messages.EMPLOYEE_PROFILE.NOT_FOUND });
       }
@@ -172,9 +172,9 @@ class EmployeeProfileController {
       return res.status(406).json({ status: 'error', message: errorMessages });
     }
 
-    const t = await Profile.sequelize.transaction();
+    const t = await EmployeeProfile.sequelize.transaction();
     try {
-      const profile = await Profile.findByPk(req.params.id);
+      const profile = await EmployeeProfile.findByPk(req.params.id);
       if (!profile) {
         return res.status(404).json({ status: 'error', message: messages.EMPLOYEE_PROFILE.NOT_FOUND });
       }

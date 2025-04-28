@@ -1,0 +1,559 @@
+{
+	"info": {
+		"_postman_id": "d148d02d-e4b8-4201-b303-9f3595cf3efb",
+		"name": "Jasamarga test",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "21230330"
+	},
+	"item": [
+		{
+			"name": "Employees",
+			"item": [
+				{
+					"name": "all",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/employees",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"employees"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "All limit",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/employees?page=1&limit=2",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"employees"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "limit",
+									"value": "2"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "All is active",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/employees?is_active=true",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"employees"
+							],
+							"query": [
+								{
+									"key": "is_active",
+									"value": "true"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "By ID tunggal",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/employees?id=1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"employees"
+							],
+							"query": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "By ID Multi",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/employees?id=1,2",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"employees"
+							],
+							"query": [
+								{
+									"key": "id",
+									"value": "1,2"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Report",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/employees/report",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"employees",
+								"report"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"nik\": \"11014\",\r\n  \"name\": \"Agus Salim\",\r\n  \"is_active\": true,\r\n  \"start_date\": \"2024-04-01\",\r\n  \"end_date\": \"2025-04-01\",\r\n  \"created_by\": \"admin\",\r\n  \"updated_by\": \"admin\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/employees",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"employees"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"name\": \"Agus Salim Updated\",\r\n  \"end_date\": \"2026-04-01\",\r\n  \"updated_by\": \"admin_update\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/employees/3",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"employees",
+								"3"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"nik\": \"11014\",\r\n  \"name\": \"Agus jaim\",\r\n  \"is_active\": true,\r\n  \"start_date\": \"2024-04-01\",\r\n  \"end_date\": \"2025-04-01\",\r\n  \"created_by\": \"admin\",\r\n  \"updated_by\": \"admin\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/employees/3",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"employees",
+								"3"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Educations",
+			"item": [
+				{
+					"name": "all",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/educations",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"educations"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "By ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/educations/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"educations",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"employee_id\": 5,\r\n  \"name\": \"SMA Negeri 17 Surabaya\",\r\n  \"level\": \"SMA\",\r\n  \"description\": \"MIPA\",\r\n  \"created_by\": \"admin\",\r\n  \"updated_by\": \"admin\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/educations",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"educations"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"name\": \"SMA Negeri 18 Surabaya\",\r\n  \"description\": \"Jurusan IPA\",\r\n  \"updated_by\": \"superadmin\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/educations/5",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"educations",
+								"5"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/educations/5",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"educations",
+								"5"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Employee-Families",
+			"item": [
+				{
+					"name": "All",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/employee-families",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"employee-families"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "By ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/employee-families/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"employee-families",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"employee_id\": 5,\r\n  \"name\": \"Siti Aminah\",\r\n  \"identifier\": \"3276065802900002\",\r\n  \"job\": \"Ibu Rumah Tangga\",\r\n  \"place_of_birth\": \"Surabaya\",\r\n  \"date_of_birth\": \"1975-02-10\",\r\n  \"religion\": \"Islam\",\r\n  \"is_life\": true,\r\n  \"is_divorced\": false,\r\n  \"relation_status\": \"Istri\",\r\n  \"created_by\": \"admin\",\r\n  \"updated_by\": \"admin\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/employee-families",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"employee-families"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"employee_id\": 2,\r\n  \"name\": \"Siti Aminah Update\",\r\n  \"job\": \"Guru\",\r\n  \"place_of_birth\": \"Malang\",\r\n  \"date_of_birth\": \"1975-02-11\",\r\n  \"religion\": \"Islam\",\r\n  \"is_life\": true,\r\n  \"is_divorced\": true,\r\n  \"relation_status\": \"Istri\",\r\n  \"updated_by\": \"admin2\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/employee-families/5",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"employee-families",
+								"5"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/employee-families/5",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"employee-families",
+								"5"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "employee-profiles",
+			"item": [
+				{
+					"name": "All",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/employee-profiles",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"employee-profiles"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "By ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/employee-profiles/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"employee-profiles",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"employee_id\": 5,\r\n  \"place_of_birth\": \"Jakarta\",\r\n  \"date_of_birth\": \"1995-06-15\",\r\n  \"is_married\": true,\r\n  \"gender\": \"Laki-Laki\",\r\n  \"created_by\": \"admin\",\r\n  \"updated_by\": \"admin\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/employee-profiles",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"employee-profiles"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"employee_id\": 5,\r\n  \"place_of_birth\": \"Surabaya\",\r\n  \"date_of_birth\": \"1995-06-15\",\r\n  \"is_married\": true,\r\n  \"gender\": \"Laki-Laki\",\r\n  \"created_by\": \"admin 2\",\r\n  \"updated_by\": \"admin\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/employee-families/3",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"employee-families",
+								"3"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/employee-profiles/3",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"employee-profiles",
+								"3"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}

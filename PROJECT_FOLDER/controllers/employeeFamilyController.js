@@ -158,24 +158,39 @@ class EmployeeFamilyController {
       const errorMessages = errors.array().map(error => `${error.path} ${error.msg}`)[0];
       return res.status(406).json({ status: 'error', message: errorMessages });
     }
-
+  
     const t = await EmployeeFamily.sequelize.transaction();
     try {
       const family = await EmployeeFamily.findByPk(req.params.id);
       if (!family) {
         return res.status(404).json({ status: 'error', message: messages.EMPLOYEE_FAMILY.NOT_FOUND });
       }
-
+  
+      // Cek hanya kalau identifier mau diubah
+      if (req.body.identifier && family.identifier !== req.body.identifier) {
+        const existingIdentifier = await EmployeeFamily.findOne({
+          where: {
+            identifier: req.body.identifier,
+            id: { [Op.ne]: req.params.id },
+          },
+        });
+  
+        if (existingIdentifier) {
+          return res.status(409).json({ status: 'error', message: 'identifier already exists.' });
+        }
+      }
+  
       await family.update(req.body, { transaction: t });
       await t.commit();
       return res.status(200).json({ status: 'success', data: family });
-
+  
     } catch (error) {
       await t.rollback();
       console.error(error);
       return res.status(500).json({ status: 'error', message: messages.EMPLOYEE_FAMILY.UPDATE_FAILED });
     }
   }
+  
 
   static async delete(req, res) {
     const errors = validationResult(req);
