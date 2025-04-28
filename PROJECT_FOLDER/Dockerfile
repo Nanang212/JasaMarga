@@ -1,27 +1,5 @@
-# # FROM node:22.14.0
-
-# # WORKDIR /usr/app
-# # COPY package*.json ./
-# # RUN npm install --legacy-peer-deps
-# # COPY . .
-# # EXPOSE 3000
-
-# FROM  node:22.14.0
-
-# WORKDIR /app
-
-# COPY package*.json ./
-# RUN npm install
-
-# COPY . .
-
-# EXPOSE 3000
-
-# CMD ["npm", "start"]
-
-
 # Gunakan image node.js
-FROM node:20.4.0-alpine
+FROM node:22.14.0
 
 # Set working directory
 WORKDIR /app
