@@ -7,6 +7,8 @@ const {
 const { validationResult, body, param } = require("express-validator");
 const { Op } = require("sequelize");
 const messages = require("../config/message");
+const redisClient = require("../config/redis");
+const { clearEmployeeCache } = require("../utils/cache");
 
 class EmployeeController {
   // === Validators ===
@@ -73,10 +75,67 @@ class EmployeeController {
 
   // === Handlers ===
 
+  // static async all(req, res) {
+  //   try {
+  //     const query = {};
+  //     query.where = {};
+
+  //     if (req.query.id) {
+  //       query.where.id = {
+  //         [Op.in]: req.query.id.split(",").map((id) => parseInt(id)),
+  //       };
+  //     }
+
+  //     if (req.query.name) {
+  //       query.where.name = { [Op.iLike]: `%${req.query.name}%` };
+  //     }
+
+  //     if (req.query.is_active) {
+  //       query.where.is_active = req.query.is_active;
+  //     }
+
+  //     if (req.query.limit === "all") {
+  //       // Tidak perlu atur limit dan offset
+  //     } else {
+  //       if (req.query.page < 1) req.query.page = 1;
+  //       query.limit = req.query.limit ? parseInt(req.query.limit) : 10;
+  //       query.offset = req.query.page
+  //         ? (parseInt(req.query.page) - 1) * query.limit
+  //         : 0;
+  //     }
+
+  //     query.include = [
+  //       { model: Education, as: "education", required: false },
+  //       { model: EmployeeFamily, as: "families", required: false },
+  //       { model: EmployeeProfile, as: "profile", required: false },
+  //     ];
+
+  //     const employees = await Employee.findAll(query);
+  //     return res.status(200).json({ status: "success", data: employees });
+  //   } catch (error) {
+  //     console.error(error);
+  //     return res
+  //       .status(500)
+  //       .json({ status: "error", message: messages.GENERAL.FAILED });
+  //   }
+  // }
+
   static async all(req, res) {
     try {
-      const query = {};
-      query.where = {};
+      const cacheKey = JSON.stringify(req.query); // Buat cacheKey berdasarkan query params
+      const redisKey = `employees:list:${cacheKey}`;
+
+      // 1. Cek apakah data ada di cache
+      const cachedData = await redisClient.get(redisKey);
+      if (cachedData) {
+        return res.status(200).json({
+          status: "success (from cache)",
+          data: JSON.parse(cachedData),
+        });
+      }
+
+      // 2. Build query dari request
+      const query = { where: {} };
 
       if (req.query.id) {
         query.where.id = {
@@ -92,9 +151,7 @@ class EmployeeController {
         query.where.is_active = req.query.is_active;
       }
 
-      if (req.query.limit === "all") {
-        // Tidak perlu atur limit dan offset
-      } else {
+      if (req.query.limit !== "all") {
         if (req.query.page < 1) req.query.page = 1;
         query.limit = req.query.limit ? parseInt(req.query.limit) : 10;
         query.offset = req.query.page
@@ -108,7 +165,11 @@ class EmployeeController {
         { model: EmployeeProfile, as: "profile", required: false },
       ];
 
+      // 3. Ambil data dari DB
       const employees = await Employee.findAll(query);
+
+      // 4. Simpan hasil ke Redis (expire dalam 60 detik)
+      await redisClient.set(redisKey, JSON.stringify(employees), { EX: 60 });
       return res.status(200).json({ status: "success", data: employees });
     } catch (error) {
       console.error(error);
@@ -168,27 +229,32 @@ class EmployeeController {
           },
         ],
       };
-  
+
       const employees = await Employee.findAll(query);
-  
+
       const report = employees.map((employee) => {
         const profile = employee.profile;
         const educationList = employee.education || []; // education = array
         const education = educationList[0]; // ambil satu education pertama
-  
+
         const families = employee.families || [];
-  
+
         const age = profile
-          ? new Date().getFullYear() - new Date(profile.date_of_birth).getFullYear()
+          ? new Date().getFullYear() -
+            new Date(profile.date_of_birth).getFullYear()
           : null;
         const gender = profile ? profile.gender : null;
-  
+
         const school_name = education ? education.name : null;
         const level = education ? education.level : null;
-  
-        const istriCount = families.filter(f => f.relation_status === "Istri").length;
-        const anakCount = families.filter(f => f.relation_status === "Anak").length;
-  
+
+        const istriCount = families.filter(
+          (f) => f.relation_status === "Istri"
+        ).length;
+        const anakCount = families.filter(
+          (f) => f.relation_status === "Anak"
+        ).length;
+
         let familyData = null;
         if (istriCount > 0 && anakCount > 0) {
           familyData = `${istriCount} Istri & ${anakCount} Anak`;
@@ -197,7 +263,7 @@ class EmployeeController {
         } else if (anakCount > 0) {
           familyData = `${anakCount} Anak`;
         }
-  
+
         return {
           employee_id: employee.id,
           nik: employee.nik,
@@ -210,7 +276,7 @@ class EmployeeController {
           family_data: familyData,
         };
       });
-  
+
       return res.status(200).json({ status: "success", data: report });
     } catch (error) {
       console.error(error);
@@ -219,8 +285,6 @@ class EmployeeController {
         .json({ status: "error", message: messages.GENERAL.FAILED });
     }
   }
-  
-  
 
   static async create(req, res) {
     const errors = validationResult(req);
@@ -235,6 +299,7 @@ class EmployeeController {
     try {
       const employee = await Employee.create(req.body, { transaction: t });
       await t.commit();
+      await clearEmployeeCache();
       return res.status(201).json({ status: "success", data: employee });
     } catch (error) {
       await t.rollback();
@@ -265,6 +330,7 @@ class EmployeeController {
 
       await employee.update(req.body, { transaction: t });
       await t.commit();
+      await clearEmployeeCache();
       return res.status(200).json({ status: "success", data: employee });
     } catch (error) {
       await t.rollback();
@@ -308,6 +374,7 @@ class EmployeeController {
       await employee.destroy({ transaction: t });
 
       await t.commit();
+      await clearEmployeeCache();
       return res
         .status(200)
         .json({ status: "success", message: "Employee deleted successfully" });

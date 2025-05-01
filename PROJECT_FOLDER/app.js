@@ -1,3 +1,4 @@
+require('dotenv').config(); // Pastikan ini paling atas agar .env terbaca
 var createError = require('http-errors');
 var express = require('express');
 var path = require('path');
@@ -12,6 +13,11 @@ var employeeFamilyRouter = require('./routes/employeeFamily');
 var employeeProfileRouter = require('./routes/employeeProfile');
 
 var app = express();
+const redisClient = require('./config/redis');
+
+redisClient.connect()
+  .then(() => console.log(" Redis client connected"))
+  .catch((err) => console.error(" Redis client failed to connect:", err));
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
