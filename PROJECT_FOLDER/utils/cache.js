@@ -1,14 +1,16 @@
 const redisClient = require('../config/redis');
 
-async function clearEmployeeCache() {
-  const keys = await redisClient.keys("employees:list:*");
+// Fungsi untuk membersihkan cache dengan prefix yang lebih general
+async function clearCache(namespace, cacheKey) {
+  const keys = await redisClient.keys(`${namespace}:${cacheKey}:*`);
   if (keys.length > 0) {
     await redisClient.del(keys);
   }
 }
 
-async function getEmployeeCache(cacheKey) {
-  const redisKey = `employees:list:${cacheKey}`;
+// Fungsi untuk mendapatkan data dari cache
+async function getCache(namespace, cacheKey) {
+  const redisKey = `${namespace}:${cacheKey}`;
   const cachedData = await redisClient.get(redisKey);
   if (cachedData) {
     return JSON.parse(cachedData);
@@ -16,13 +18,14 @@ async function getEmployeeCache(cacheKey) {
   return null;
 }
 
-async function setEmployeeCache(cacheKey, data, ttl = 60) {
-  const redisKey = `employees:list:${cacheKey}`;
+// Fungsi untuk menyimpan data ke cache dengan TTL (Time-to-Live)
+async function setCache(namespace, cacheKey, data, ttl = 120) {
+  const redisKey = `${namespace}:${cacheKey}`;
   await redisClient.set(redisKey, JSON.stringify(data), { EX: ttl });
 }
 
 module.exports = {
-  clearEmployeeCache,
-  getEmployeeCache,
-  setEmployeeCache,
+  clearCache,
+  getCache,
+  setCache,
 };

@@ -8,7 +8,7 @@ const { validationResult, body, param } = require("express-validator");
 const { Op } = require("sequelize");
 const messages = require("../config/message");
 const redisClient = require("../config/redis");
-const { clearEmployeeCache } = require("../utils/cache");
+const { clearCache, getCache, setCache } = require("../utils/cache");
 
 class EmployeeController {
   // === Validators ===
@@ -75,62 +75,17 @@ class EmployeeController {
 
   // === Handlers ===
 
-  // static async all(req, res) {
-  //   try {
-  //     const query = {};
-  //     query.where = {};
-
-  //     if (req.query.id) {
-  //       query.where.id = {
-  //         [Op.in]: req.query.id.split(",").map((id) => parseInt(id)),
-  //       };
-  //     }
-
-  //     if (req.query.name) {
-  //       query.where.name = { [Op.iLike]: `%${req.query.name}%` };
-  //     }
-
-  //     if (req.query.is_active) {
-  //       query.where.is_active = req.query.is_active;
-  //     }
-
-  //     if (req.query.limit === "all") {
-  //       // Tidak perlu atur limit dan offset
-  //     } else {
-  //       if (req.query.page < 1) req.query.page = 1;
-  //       query.limit = req.query.limit ? parseInt(req.query.limit) : 10;
-  //       query.offset = req.query.page
-  //         ? (parseInt(req.query.page) - 1) * query.limit
-  //         : 0;
-  //     }
-
-  //     query.include = [
-  //       { model: Education, as: "education", required: false },
-  //       { model: EmployeeFamily, as: "families", required: false },
-  //       { model: EmployeeProfile, as: "profile", required: false },
-  //     ];
-
-  //     const employees = await Employee.findAll(query);
-  //     return res.status(200).json({ status: "success", data: employees });
-  //   } catch (error) {
-  //     console.error(error);
-  //     return res
-  //       .status(500)
-  //       .json({ status: "error", message: messages.GENERAL.FAILED });
-  //   }
-  // }
-
   static async all(req, res) {
     try {
       const cacheKey = JSON.stringify(req.query); // Buat cacheKey berdasarkan query params
       const redisKey = `employees:list:${cacheKey}`;
 
       // 1. Cek apakah data ada di cache
-      const cachedData = await redisClient.get(redisKey);
+      const cachedData = await getCache('employees', cacheKey);
       if (cachedData) {
         return res.status(200).json({
           status: "success (from cache)",
-          data: JSON.parse(cachedData),
+          data: cachedData,
         });
       }
 
@@ -167,9 +122,7 @@ class EmployeeController {
 
       // 3. Ambil data dari DB
       const employees = await Employee.findAll(query);
-
-      // 4. Simpan hasil ke Redis (expire dalam 60 detik)
-      await redisClient.set(redisKey, JSON.stringify(employees), { EX: 60 });
+      await setCache('employees', cacheKey, employees, 120);
       return res.status(200).json({ status: "success", data: employees });
     } catch (error) {
       console.error(error);
@@ -299,7 +252,7 @@ class EmployeeController {
     try {
       const employee = await Employee.create(req.body, { transaction: t });
       await t.commit();
-      await clearEmployeeCache();
+      await clearCache('employees', 'list'); 
       return res.status(201).json({ status: "success", data: employee });
     } catch (error) {
       await t.rollback();
@@ -330,7 +283,7 @@ class EmployeeController {
 
       await employee.update(req.body, { transaction: t });
       await t.commit();
-      await clearEmployeeCache();
+      await clearCache('employees', 'list'); 
       return res.status(200).json({ status: "success", data: employee });
     } catch (error) {
       await t.rollback();
@@ -374,7 +327,7 @@ class EmployeeController {
       await employee.destroy({ transaction: t });
 
       await t.commit();
-      await clearEmployeeCache();
+      await clearCache('employees', 'list'); 
       return res
         .status(200)
         .json({ status: "success", message: "Employee deleted successfully" });

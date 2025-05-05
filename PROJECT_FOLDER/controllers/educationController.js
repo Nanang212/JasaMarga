@@ -2,6 +2,7 @@ const { Education, Employee } = require('../models');
 const { Op } = require('sequelize');
 const { validationResult, body, param } = require('express-validator');
 const messages = require('../config/message');
+const { clearCache, getCache, setCache } = require("../utils/cache");
 
 class EducationController {
 
@@ -46,8 +47,18 @@ class EducationController {
 
   static async all(req, res) {
     try {
-      const query = {};
-      query.where = {};
+      const cacheKey = JSON.stringify(req.query); // Buat cacheKey berdasarkan query params
+      const redisKey = `educations:list:${cacheKey}`;
+
+      // 1. Cek apakah data ada di cache
+      const cachedData = await getCache('educations', cacheKey);
+      if (cachedData) {
+        return res.status(200).json({
+          status: "success (from cache)",
+          data: cachedData,
+        });
+      }
+      const query = { where: {} };
 
       if (req.query.id) {
         query.where.id = {
